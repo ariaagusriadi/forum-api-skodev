@@ -51,7 +51,7 @@ DELETE | api/forums/{forum}/comments/{comment}
 
 
 
-#### FORUMS
+#### USERS
 METHOD | ENDPOINT 
  ------------ | ------------- 
 GET HEAD | api/user/@{username}
