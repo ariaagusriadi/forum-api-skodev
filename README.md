@@ -33,11 +33,11 @@ POST | api/forums/{forum}
 #### FORUMS
 METHOD | ENDPOINT 
  ------------ | ------------- 
-GET|HEAD | api/forums 
+GET HEAD | api/forums 
 POST | api/forums 
-GET|HEAD | api/forums/tag/{tag} 
-GET|HEAD | api/forums/{forum} 
-PUT|PATCH | api/forums/{forum} 
+GET HEAD | api/forums/tag/{tag} 
+GET HEAD | api/forums/{forum} 
+PUT PATCH | api/forums/{forum} 
 DELETE | api/forums/{forum} 
 
 
@@ -46,7 +46,7 @@ DELETE | api/forums/{forum}
 METHOD | ENDPOINT 
  ------------ | -------------  
 POST | api/forums/{forum}/comments 
-PUT|PATCH | api/forums/{forum}/comments/{comment} 
+PUT PATCH | api/forums/{forum}/comments/{comment} 
 DELETE | api/forums/{forum}/comments/{comment} 
 
 
@@ -54,6 +54,6 @@ DELETE | api/forums/{forum}/comments/{comment}
 #### FORUMS
 METHOD | ENDPOINT 
  ------------ | ------------- 
-GET|HEAD | api/user/@{username}
-GET|HEAD | api/user/@{username}/activity
+GET HEAD | api/user/@{username}
+GET HEAD | api/user/@{username}/activity
 
