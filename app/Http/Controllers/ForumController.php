@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Forum;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Forum;
+use App\Http\Resources\ForumResource;
+use App\Http\Resources\ForumsResource;
 use Illuminate\Support\Facades\Validator;
 
 class ForumController extends Controller
 {
 
+    use AuthUserTrait;
+
     public function index()
     {
-        return Forum::with('user:id,username')->get();
+        return ForumsResource::collection(
+            Forum::with('user')->withCount('comments')->paginate(3)
+        );
     }
 
     public function store(Request $request)
@@ -33,17 +39,23 @@ class ForumController extends Controller
 
     public function show(string $id)
     {
-        return Forum::with('user:id,username', 'comments.user:id,username')->find($id);
+        return new ForumResource(Forum::with('user', 'comments.user')->find($id));
+    }
+
+    public function filterTag($tag)
+    {
+        return ForumResource::collection(
+            Forum::with('user')->where('category', $tag)->paginate(3)
+        );
     }
 
     public function update(Request $request, string $id)
     {
         $this->validateRequest();
 
-        $user = $this->getAuthUser();
         $forum = Forum::find($id);
 
-        $this->cekOwnership($user->id, $forum->user_id);
+        $this->cekOwnership($forum->user_id);
 
         $forum->update([
             'title' => request('title'),
@@ -56,11 +68,8 @@ class ForumController extends Controller
 
     public function destroy(string $id)
     {
-        $user = $this->getAuthUser();
         $forum = Forum::find($id);
-
-        $this->cekOwnership($user->id, $forum->user_id);
-
+        $this->cekOwnership($forum->user_id);
         $forum->delete();
 
         return response()->json(['message' => 'Successfully delete']);
@@ -76,25 +85,7 @@ class ForumController extends Controller
         ]);
 
         if ($validator->fails()) {
-            response()->json($validator->messages())->send();
-            exit;
-        }
-    }
-
-    private function getAuthUser()
-    {
-        try {
-            return auth()->userOrFail();
-        } catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            response()->json(['message' => 'not authenticated, you have to login first'])->send();
-            exit;
-        }
-    }
-
-    private function cekOwnership($authUser, $owner)
-    {
-        if ($authUser != $owner) {
-            response()->json(['message' => 'Not Authorized'], 403)->send();
+            response()->json($validator->messages(), 422)->send();
             exit;
         }
     }

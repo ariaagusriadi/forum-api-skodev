@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AuthUserTrait;
 use App\Models\Forum;
+use App\Models\ForumComment;
 use Illuminate\Support\Facades\Validator;
 
 class  ForumCommentController extends Controller
@@ -33,24 +34,33 @@ class  ForumCommentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            response()->json($validator->messages())->send();
+            response()->json($validator->messages(),422)->send();
             exit;
         }
     }
 
-    public function show(string $id)
+
+    public function update(Request $request, $forum_id, $comment_id)
     {
-       
+        $this->validateRequest();
+
+        $forumComment = ForumComment::find($comment_id);
+
+        $this->cekOwnership($forumComment->user_id);
+
+        $forumComment->update([
+            'body' => request('body')
+        ]);
+
+        return response()->json(['message' => 'Successfully update Comment']);
     }
 
-
-    public function update(Request $request, string $id)
+    public function destroy($forum_id, $comment_id)
     {
-        //
-    }
+        $forumComment = ForumComment::find($comment_id);
+        $this->cekOwnership($forumComment->user_id);
+        $forumComment->delete();
 
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['message' => 'Successfully delete Comment']);
     }
 }

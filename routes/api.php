@@ -5,6 +5,7 @@ use App\Http\Controllers\ForumCommentController;
 use App\Http\Controllers\ForumController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\UserController;
 
 Route::group(['middleware' => 'api'], function ($router) {
 
@@ -15,6 +16,12 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::post('me', [AuthController::class, 'me']);
     });
+
+    Route::get('/forums/tag/{tag}', [ForumController::class, 'filterTag']);
+
+    Route::get('/user/@{username}', [UserController::class, 'show']);
+    Route::get('/user/@{username}/activity', [UserController::class, 'getActivity']);
+
 
     Route::apiResource('forums', ForumController::class);
     Route::apiResource('forums.comments', ForumCommentController::class);
